@@ -1,125 +1,172 @@
-import React, { useState, useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { UserDataContext } from '../context/UserContext'
-
-
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserDataContext } from "../context/UserContext";
 
 const UserSignup = () => {
-  const [ email, setEmail ] = useState('')
-  const [ password, setPassword ] = useState('')
-  const [ firstName, setFirstName ] = useState('')
-  const [ lastName, setLastName ] = useState('')
-  const [ userData, setUserData ] = useState({})
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate()
-
-
-
-  const { user, setUser } = useContext(UserDataContext)
-
-
-
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserDataContext);
 
   const submitHandler = async (e) => {
-    e.preventDefault()
-    const newUser = {
-      fullname: {
-        firstname: firstName,
-        lastname: lastName
-      },
-      email: email,
-      password: password
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const newUser = {
+        fullname: {
+          firstname: firstName,
+          lastname: lastName,
+        },
+        email,
+        password,
+      };
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/register`,
+        newUser
+      );
+
+      if (response.status === 201) {
+        const { user, token } = response.data;
+        setUser(user);
+        localStorage.setItem("token", token);
+        navigate("/home");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
-
-    if (response.status === 201) {
-      const data = response.data
-      setUser(data.user)
-      localStorage.setItem('token', data.token)
-      navigate('/home')
-    }
-
-
-    setEmail('')
-    setFirstName('')
-    setLastName('')
-    setPassword('')
-
-  }
   return (
-    <div>
-      <div className='p-7 h-screen flex flex-col justify-between'>
-        <div>
-          <img className='w-16 mb-10' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s" alt="" />
+    <div className="flex flex-col justify-between h-screen p-7 bg-gradient-to-br from-white to-gray-50">
+      <div>
+        <div className="flex justify-center mb-8">
+          <img
+            className="w-20"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s"
+            alt="Uber"
+          />
+        </div>
 
-          <form onSubmit={(e) => {
-            submitHandler(e)
-          }}>
+        <div className="p-6 bg-white shadow-lg rounded-2xl">
+          <h2 className="mb-6 text-2xl font-bold text-gray-900">
+            Create Account
+          </h2>
 
-            <h3 className='text-lg w-1/2  font-medium mb-2'>What's your name</h3>
-            <div className='flex gap-4 mb-7'>
+          {error && (
+            <div className="flex items-center gap-2 p-3 mb-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg">
+              <i className="ri-error-warning-line"></i>
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={submitHandler}>
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <div className="flex gap-3">
+                <input
+                  required
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-1/2 px-4 py-3 text-gray-900 transition-all border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-purple-500 focus:bg-white focus:outline-none"
+                  placeholder="First name"
+                  disabled={isLoading}
+                />
+                <input
+                  required
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-1/2 px-4 py-3 text-gray-900 transition-all border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-purple-500 focus:bg-white focus:outline-none"
+                  placeholder="Last name"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Email Address
+              </label>
               <input
                 required
-                className='bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border  text-lg placeholder:text-base'
-                type="text"
-                placeholder='First name'
-                value={firstName}
-                onChange={(e) => {
-                  setFirstName(e.target.value)
-                }}
-              />
-              <input
-                required
-                className='bg-[#eeeeee] w-1/2  rounded-lg px-4 py-2 border  text-lg placeholder:text-base'
-                type="text"
-                placeholder='Last name'
-                value={lastName}
-                onChange={(e) => {
-                  setLastName(e.target.value)
-                }}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 text-gray-900 transition-all border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-purple-500 focus:bg-white focus:outline-none"
+                placeholder="email@example.com"
+                disabled={isLoading}
               />
             </div>
 
-            <h3 className='text-lg font-medium mb-2'>What's your email</h3>
-            <input
-              required
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-              }}
-              className='bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'
-              type="email"
-              placeholder='email@example.com'
-            />
-
-            <h3 className='text-lg font-medium mb-2'>Enter Password</h3>
-
-            <input
-              className='bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base'
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-              }}
-              required type="password"
-              placeholder='password'
-            />
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                required
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 text-gray-900 transition-all border-2 border-gray-200 rounded-lg bg-gray-50 focus:border-purple-500 focus:bg-white focus:outline-none"
+                placeholder="Create a password (min 6 characters)"
+                minLength={6}
+                disabled={isLoading}
+              />
+            </div>
 
             <button
-              className='bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base'
-            >Create account</button>
-
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 font-semibold text-white transition-all bg-black rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <i className="ri-loader-4-line animate-spin"></i>
+                  Creating account...
+                </span>
+              ) : (
+                "Create Account"
+              )}
+            </button>
           </form>
-          <p className='text-center'>Already have a account? <Link to='/login' className='text-blue-600'>Login here</Link></p>
-        </div>
-        <div>
-          <p className='text-[10px] leading-tight'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy
-            Policy</span> and <span className='underline'>Terms of Service apply</span>.</p>
+
+          <p className="mt-4 text-sm text-center text-gray-600">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-semibold text-purple-600 hover:text-purple-700"
+            >
+              Login here
+            </Link>
+          </p>
         </div>
       </div>
-    </div >
-  )
-}
 
-export default UserSignup
+      <div>
+        <p className="text-xs leading-tight text-center text-gray-500">
+          This site is protected by reCAPTCHA and the{" "}
+          <span className="underline">Google Privacy Policy</span> and{" "}
+          <span className="underline">Terms of Service</span> apply.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default UserSignup;

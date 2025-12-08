@@ -1,80 +1,152 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const FinishRide = (props) => {
+  const navigate = useNavigate();
+  const [isEnding, setIsEnding] = useState(false);
+  const [error, setError] = useState("");
 
-    const navigate = useNavigate()
+  const endRide = async () => {
+    setError("");
+    setIsEnding(true);
 
-    async function endRide() {
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/end-ride`, {
-
-            rideId: props.ride._id
-
-
-        }, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-
-        if (response.status === 200) {
-            navigate('/captain-home')
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
+        {
+          rideId: props.ride._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
+      );
 
+      if (response.status === 200) {
+        setTimeout(() => {
+          navigate("/captain-home");
+        }, 1500);
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Failed to end ride. Please try again."
+      );
+      setIsEnding(false);
     }
+  };
 
-    return (
-        <div>
-            <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
-                props.setFinishRidePanel(false)
-            }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
-            <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
-            <div className='flex items-center justify-between p-4 border-2 border-yellow-400 rounded-lg mt-4'>
-                <div className='flex items-center gap-3 '>
-                    <img className='h-12 rounded-full object-cover w-12' src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg" alt="" />
-                    <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname}</h2>
-                </div>
-                <h5 className='text-lg font-semibold'>2.2 KM</h5>
-            </div>
-            <div className='flex gap-2 justify-between flex-col items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="ri-map-pin-user-fill"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.pickup}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5 p-3'>
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="relative">
+      {/* Close Button */}
+      <button
+        className="absolute top-0 left-0 right-0 flex justify-center p-2"
+        onClick={() => props.setFinishRidePanel(false)}
+      >
+        <i className="text-3xl text-gray-400 ri-arrow-down-wide-line"></i>
+      </button>
 
-                <div className='mt-10 w-full'>
+      <div className="mt-8">
+        <h3 className="mb-6 text-2xl font-bold text-gray-900">Complete Ride</h3>
 
-                    <button
-                        onClick={endRide}
-                        className='w-full mt-5 flex  text-lg justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'>Finish Ride</button>
+        {/* Error Message */}
+        {error && (
+          <div className="flex items-center gap-2 p-3 mb-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg">
+            <i className="ri-error-warning-line"></i>
+            <span>{error}</span>
+          </div>
+        )}
 
+        {/* Success Message */}
+        {isEnding && (
+          <div className="flex items-center gap-2 p-3 mb-4 text-sm text-green-700 bg-green-100 border border-green-200 rounded-lg">
+            <i className="ri-checkbox-circle-line"></i>
+            <span>Ride completed successfully!</span>
+          </div>
+        )}
 
-                </div>
-            </div>
+        {/* Passenger Info */}
+        <div className="flex items-center gap-4 p-4 mb-6 border border-gray-200 rounded-xl bg-gray-50">
+          <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-purple-600 rounded-full">
+            <i className="text-xl text-white ri-user-fill"></i>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900 capitalize">
+              {props.ride?.user?.fullname?.firstname || "Passenger"}{" "}
+              {props.ride?.user?.fullname?.lastname || ""}
+            </h2>
+            <p className="mt-1 text-xs text-gray-500">Ride completed</p>
+          </div>
         </div>
-    )
-}
 
-export default FinishRide
+        {/* Ride Summary */}
+        <div className="mb-6 space-y-3">
+          {/* Pickup */}
+          <div className="flex items-start gap-4 p-3 border-l-4 border-green-500 rounded-lg bg-green-50">
+            <i className="flex-shrink-0 text-xl text-green-600 ri-map-pin-user-fill"></i>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase">
+                Pickup
+              </h3>
+              <p className="mt-1 text-sm text-gray-700 break-words">
+                {props.ride?.pickup || "Loading..."}
+              </p>
+            </div>
+          </div>
+
+          {/* Destination */}
+          <div className="flex items-start gap-4 p-3 border-l-4 border-red-500 rounded-lg bg-red-50">
+            <i className="flex-shrink-0 text-xl text-red-600 ri-map-pin-2-fill"></i>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase">
+                Destination
+              </h3>
+              <p className="mt-1 text-sm text-gray-700 break-words">
+                {props.ride?.destination || "Loading..."}
+              </p>
+            </div>
+          </div>
+
+          {/* Fare */}
+          {props.ride?.fare && (
+            <div className="flex items-center justify-between p-4 border border-green-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700">
+                  Total Fare
+                </h3>
+                <p className="mt-1 text-xs text-gray-600">Amount to collect</p>
+              </div>
+              <p className="text-3xl font-bold text-green-600">
+                ₹{props.ride.fare}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-8">
+          <button
+            onClick={endRide}
+            disabled={isEnding}
+            className="w-full p-4 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed active:scale-95"
+          >
+            {isEnding ? (
+              <span className="flex items-center justify-center gap-2">
+                <i className="ri-loader-4-line animate-spin"></i>
+                Completing...
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <i className="ri-checkbox-circle-line"></i>
+                Complete Ride
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FinishRide;
