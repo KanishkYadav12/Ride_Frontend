@@ -229,6 +229,15 @@ const Home = () => {
     e.preventDefault();
   };
 
+  const normalizeFareAddress = (address) => {
+    return String(address || "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .slice(0, 6)
+      .join(", ");
+  };
+
   // Get fare
   const findTrip = async () => {
     if (!pickup || !destination) {
@@ -239,9 +248,12 @@ const Home = () => {
     setError("");
     setIsLoadingFare(true);
 
+    const pickupQuery = normalizeFareAddress(pickup);
+    const destinationQuery = normalizeFareAddress(destination);
+
     try {
       const res = await axios.get(`${API_BASE_URL}/rides/get-fare`, {
-        params: { pickup, destination },
+        params: { pickup: pickupQuery, destination: destinationQuery },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -253,7 +265,15 @@ const Home = () => {
       setPanelOpen(false);
     } catch (err) {
       console.error("Fare calculation error:", err);
-      setError(err.response?.data?.message || "Failed to calculate fare");
+      const statusCode = err.response?.status;
+      if (statusCode === 502) {
+        setError(
+          err.response?.data?.message ||
+            "Location services are temporarily busy. Please select locations from suggestions and retry.",
+        );
+      } else {
+        setError(err.response?.data?.message || "Failed to calculate fare");
+      }
     } finally {
       setIsLoadingFare(false);
     }

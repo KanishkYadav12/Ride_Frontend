@@ -9,6 +9,11 @@ const ConfirmRidePopUp = (props) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const isRideUnavailableError =
+    error.toLowerCase().includes("ride not found") ||
+    error.toLowerCase().includes("not assigned") ||
+    error.toLowerCase().includes("ride not available");
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -165,6 +170,20 @@ const ConfirmRidePopUp = (props) => {
             >
               Cancel
             </button>
+
+            {isRideUnavailableError && (
+              <button
+                type="button"
+                onClick={() => {
+                  props.setConfirmRidePopupPanel(false);
+                  props.setRidePopupPanel(false);
+                  navigate("/captain-home");
+                }}
+                className="w-full p-4 mt-2 font-semibold text-white transition-all bg-blue-600 rounded-lg hover:bg-blue-700 active:scale-95"
+              >
+                Go to Home
+              </button>
+            )}
           </form>
         </div>
       </div>

@@ -9,7 +9,7 @@ const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const s = io(API_BASE_URL, {
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

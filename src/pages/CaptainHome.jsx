@@ -70,21 +70,35 @@ const CaptainHome = () => {
       console.log("✅ Captain joined socket room:", captain._id, socket.id);
     };
 
-    // Location update function
-    // Location update function
-    // TEMP: send fixed location (Indore) so backend can find captain
     const updateLocation = () => {
-      const fakeLocation = {
-        lat: 22.7203616, // Indore
-        lng: 75.8681996,
-      };
+      if (!navigator.geolocation) {
+        console.warn("Geolocation is not supported in this browser.");
+        return;
+      }
 
-      socket.emit("update-location-captain", {
-        userId: captain._id,
-        location: fakeLocation,
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const liveLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
 
-      console.log("📍 Sent fake location for captain:", fakeLocation);
+          socket.emit("update-location-captain", {
+            userId: captain._id,
+            location: liveLocation,
+          });
+
+          console.log("📍 Sent live location for captain:", liveLocation);
+        },
+        (geoError) => {
+          console.error("Failed to get captain location:", geoError.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 5000,
+        },
+      );
     };
 
     // Initial location update
@@ -106,6 +120,24 @@ const CaptainHome = () => {
       });
     };
 
+    const handleRideAccepted = (data) => {
+      console.log("✅ Ride accepted by another captain:", data);
+      if (ride?._id === data.rideId) {
+        console.log(
+          "Dismissing popup - ride was accepted by",
+          data.captainName,
+        );
+        setRide(null);
+        setRidePopupPanel(false);
+        setConfirmRidePopupPanel(false);
+        setIncomingRideToast({
+          title: "Ride taken",
+          pickup: `${data.captainName} accepted this ride`,
+          destination: "",
+        });
+      }
+    };
+
     const handleError = (error) => {
       console.error("❌ Socket error:", error);
       setError(error.message || "Something went wrong");
@@ -114,6 +146,7 @@ const CaptainHome = () => {
     joinSocketRoom();
 
     socket.on("new-ride", handleNewRide);
+    socket.on("ride-accepted", handleRideAccepted);
     socket.on("error", handleError);
     socket.on("connect", joinSocketRoom);
 
@@ -121,6 +154,7 @@ const CaptainHome = () => {
     return () => {
       clearInterval(locationInterval);
       socket.off("new-ride", handleNewRide);
+      socket.off("ride-accepted", handleRideAccepted);
       socket.off("error", handleError);
       socket.off("connect", joinSocketRoom);
     };
