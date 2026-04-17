@@ -50,27 +50,27 @@ const LocationSearchPanel = ({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 px-4 py-6 text-center">
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
           <i className="text-xl text-red-500 ri-error-warning-line"></i>
         </div>
-        <p className="text-sm font-medium text-gray-900">
+        <p className="text-sm font-medium text-slate-900">
           Suggestions unavailable
         </p>
-        <p className="text-xs leading-5 text-gray-500">{error}</p>
+        <p className="text-xs leading-5 text-slate-500">{error}</p>
       </div>
     );
   }
 
   return (
     <div className="py-3">
-      <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-100">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 pb-3">
         <div>
-          <h4 className="text-sm font-semibold text-gray-900">
+          <h4 className="text-sm font-semibold text-slate-900">
             {activeField === "pickup"
               ? "Pickup suggestions"
               : "Destination suggestions"}
           </h4>
-          <p className="mt-1 text-xs text-gray-500">{getHelperText()}</p>
+          <p className="mt-1 text-xs text-slate-500">{getHelperText()}</p>
         </div>
         {isLoading && (
           <i className="text-base text-purple-600 ri-loader-4-line animate-spin"></i>
@@ -91,13 +91,13 @@ const LocationSearchPanel = ({
         </div>
       ) : !suggestions || suggestions.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 px-4 py-6 text-center">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-50">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-50">
             <i className="text-xl text-purple-600 ri-map-pin-line"></i>
           </div>
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-slate-900">
             No suggestions yet
           </p>
-          <p className="text-xs leading-5 text-gray-500">{getHelperText()}</p>
+          <p className="text-xs leading-5 text-slate-500">{getHelperText()}</p>
         </div>
       ) : (
         <div className="p-3 space-y-2">
@@ -108,13 +108,13 @@ const LocationSearchPanel = ({
                 key={`${label}-${idx}`}
                 type="button"
                 onClick={() => handleSuggestionClick(item)}
-                className="flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3 text-left text-sm transition-all hover:border-purple-400 hover:bg-purple-50 active:scale-[0.99]"
+                className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left text-sm transition-all hover:border-violet-300 hover:bg-violet-50 active:scale-[0.99]"
               >
-                <div className="flex items-center justify-center flex-shrink-0 bg-gray-100 rounded-full h-10 w-10">
-                  <i className="text-lg text-purple-600 ri-map-pin-2-fill"></i>
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-100">
+                  <i className="ri-map-pin-2-fill text-lg text-violet-600"></i>
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <p className="truncate text-[13px] font-medium text-gray-900">
+                  <p className="truncate text-[13px] font-medium text-slate-900">
                     {label}
                   </p>
                 </div>

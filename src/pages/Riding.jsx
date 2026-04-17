@@ -8,7 +8,7 @@ const Riding = () => {
   const { socket } = useContext(SocketContext);
   const { ride } = location.state || {};
 
-  const [isEnding, setIsEnding] = useState(false);
+  const [isRideCompleted, setIsRideCompleted] = useState(false);
   const [rideData, setRideData] = useState(ride);
 
   const captainName =
@@ -25,6 +25,9 @@ const Riding = () => {
     typeof rideData?.duration === "number"
       ? Math.max(1, Math.round(rideData.duration / 60))
       : null;
+  const completedAtLabel = rideData?.completedAt
+    ? new Date(rideData.completedAt).toLocaleString()
+    : null;
 
   const formatDistance = (value) => {
     if (value === null) return "--";
@@ -35,11 +38,11 @@ const Riding = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleRideEnded = () => {
-      setIsEnding(true);
-      window.setTimeout(() => {
-        navigate("/home");
-      }, 2000);
+    const handleRideEnded = (endedRide) => {
+      if (endedRide) {
+        setRideData(endedRide);
+      }
+      setIsRideCompleted(true);
     };
 
     const handleRideUpdated = (updatedRide) => {
@@ -63,10 +66,11 @@ const Riding = () => {
 
   if (!rideData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 px-6">
-        <div className="text-center text-white">
-          <i className="ri-loader-4-line animate-spin text-6xl text-white/90"></i>
-          <p className="mt-4 text-lg font-medium text-white/80">
+      <div className="screen-base screen-user flex items-center justify-center px-6">
+        <div className="aurora-backdrop" />
+        <div className="panel-card relative z-10 w-[min(92vw,420px)] p-8 text-center">
+          <i className="ri-loader-4-line animate-spin text-6xl text-violet-600"></i>
+          <p className="mt-4 text-lg font-medium text-slate-700">
             Loading ride...
           </p>
         </div>
@@ -75,35 +79,34 @@ const Riding = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#07111f] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.28),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(168,85,247,0.24),_transparent_24%),linear-gradient(180deg,_rgba(15,23,42,0.3),_rgba(7,17,31,1))]" />
-      <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-white/10 to-transparent" />
+    <div className="screen-base screen-user">
+      <div className="aurora-backdrop" />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <div className="flex items-center justify-between px-4 pt-4 sm:px-6">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-lg backdrop-blur-xl transition-transform hover:scale-105"
+            className="icon-btn"
             aria-label="Go home"
           >
             <i className="ri-home-5-line text-lg"></i>
           </button>
 
-          <div className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/85 shadow-lg backdrop-blur-xl">
-            Trip in progress
+          <div className="rounded-full border border-violet-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-violet-700 shadow-sm">
+            {isRideCompleted ? "Trip completed" : "Trip in progress"}
           </div>
 
           <button
             onClick={() => navigate("/home")}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-lg backdrop-blur-xl transition-transform hover:scale-105"
+            className="icon-btn"
             aria-label="Back to home"
           >
             <i className="ri-arrow-left-s-line text-xl"></i>
           </button>
         </div>
 
-        <div className="relative mx-4 mt-4 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-sky-500 via-indigo-500 to-fuchsia-500 shadow-[0_30px_80px_-25px_rgba(0,0,0,0.65)] sm:mx-6">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.22),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.12),_transparent_32%)]" />
+        <div className="relative mx-4 mt-4 overflow-hidden rounded-[2rem] border border-violet-200 bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-600 shadow-[0_30px_80px_-35px_rgba(37,99,235,0.65)] sm:mx-6">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.2),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.1),_transparent_30%)]" />
           <div className="relative flex min-h-[42vh] flex-col items-center justify-center px-6 py-10 text-center">
             <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/12 shadow-2xl backdrop-blur-md">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-fuchsia-600 shadow-lg">
@@ -115,11 +118,13 @@ const Riding = () => {
               En route
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Your ride is on the way
+              {isRideCompleted
+                ? "Your ride is completed"
+                : "Your ride is on the way"}
             </h1>
             <p className="mt-3 max-w-md text-sm leading-6 text-white/85 sm:text-base">
-              {isEnding
-                ? "Your trip is wrapping up. Please wait while we complete the ride."
+              {isRideCompleted
+                ? "Thanks for riding with us. Review your trip summary below."
                 : "Stay ready, keep your phone nearby, and follow the live trip details below."}
             </p>
 
@@ -152,8 +157,8 @@ const Riding = () => {
           </div>
         </div>
 
-        <div className="-mt-8 flex flex-1 flex-col rounded-t-[2.25rem] bg-[#f4f7fb] px-4 pb-5 pt-5 text-slate-900 shadow-[0_-20px_60px_rgba(0,0,0,0.25)] sm:px-6">
-          {isEnding && (
+        <div className="sheet-panel -mt-8 flex flex-1 flex-col rounded-t-[2.25rem] px-4 pb-5 pt-5 text-slate-900 shadow-[0_-20px_60px_rgba(37,99,235,0.18)] sm:px-6">
+          {isRideCompleted && (
             <div className="mb-4 flex items-start gap-3 rounded-3xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-emerald-900 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                 <i className="ri-checkbox-circle-line text-xl"></i>
@@ -161,8 +166,13 @@ const Riding = () => {
               <div>
                 <p className="font-semibold">Ride completed</p>
                 <p className="text-sm text-emerald-800/80">
-                  Wrapping up and returning you to the home screen.
+                  Your trip is finished. You can head back to home anytime.
                 </p>
+                {completedAtLabel && (
+                  <p className="mt-1 text-xs text-emerald-800/70">
+                    Completed at: {completedAtLabel}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -206,7 +216,7 @@ const Riding = () => {
                   Status
                 </p>
                 <p className="mt-1 text-sm font-bold text-emerald-600">
-                  {rideStatusLabel}
+                  {isRideCompleted ? "Completed" : rideStatusLabel}
                 </p>
               </div>
               <div className="rounded-2xl bg-slate-50 px-3 py-3">
@@ -231,7 +241,7 @@ const Riding = () => {
                 </h3>
               </div>
               <div className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                Live
+                {isRideCompleted ? "Overview" : "Live"}
               </div>
             </div>
 
@@ -268,7 +278,7 @@ const Riding = () => {
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
-              disabled={isEnding}
+              disabled={isRideCompleted}
               className="w-full rounded-[1.4rem] bg-slate-900 px-4 py-4 font-semibold text-white shadow-lg transition-all hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-500"
             >
               <span className="flex items-center justify-center gap-2">
@@ -281,7 +291,7 @@ const Riding = () => {
               onClick={() => navigate("/home")}
               className="w-full rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4 font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50"
             >
-              Back to home
+              {isRideCompleted ? "Go to Home" : "Back to home"}
             </button>
           </div>
         </div>

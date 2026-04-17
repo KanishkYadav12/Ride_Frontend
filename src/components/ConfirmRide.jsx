@@ -10,7 +10,6 @@ const ConfirmRide = (props) => {
 
   return (
     <div className="relative">
-      {/* Close Button */}
       <button
         className="absolute top-0 left-0 right-0 flex justify-center p-2"
         onClick={() => props.setConfirmRidePanel(false)}
@@ -19,54 +18,50 @@ const ConfirmRide = (props) => {
       </button>
 
       <div className="mt-8">
-        <h3 className="mb-6 text-2xl font-bold text-gray-900">
+        <p className="title-kicker">Review</p>
+        <h3 className="mb-6 mt-1 text-2xl font-bold text-slate-900">
           Confirm your Ride
         </h3>
 
-        {/* Vehicle Image */}
         <div className="flex justify-center mb-6">
           <img
-            className="h-24"
+            className="h-24 rounded-2xl bg-slate-50 p-2"
             src={vehicleImages[props.vehicleType] || vehicleImages.car}
             alt={props.vehicleType}
           />
         </div>
 
-        {/* Ride Details */}
         <div className="space-y-3">
-          {/* Pickup */}
-          <div className="flex items-start gap-4 p-4 transition-all border-2 border-gray-200 rounded-xl hover:border-green-300">
+          <div className="surface-block flex items-start gap-4">
             <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full">
               <i className="text-xl text-green-600 ri-map-pin-user-fill"></i>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-slate-900">
                 Pickup Location
               </h3>
-              <p className="mt-1 text-sm text-gray-600">{props.pickup}</p>
+              <p className="mt-1 text-sm text-slate-600">{props.pickup}</p>
             </div>
           </div>
 
-          {/* Destination */}
-          <div className="flex items-start gap-4 p-4 transition-all border-2 border-gray-200 rounded-xl hover:border-red-300">
+          <div className="surface-block flex items-start gap-4">
             <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
               <i className="text-xl text-red-600 ri-map-pin-2-fill"></i>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-slate-900">
                 Destination
               </h3>
-              <p className="mt-1 text-sm text-gray-600">{props.destination}</p>
+              <p className="mt-1 text-sm text-slate-600">{props.destination}</p>
             </div>
           </div>
 
-          {/* Fare */}
-          <div className="flex items-start gap-4 p-4 transition-all border-2 border-gray-200 rounded-xl hover:border-purple-300">
+          <div className="surface-block flex items-start gap-4">
             <div className="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full">
               <i className="text-xl text-purple-600 ri-money-rupee-circle-fill"></i>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-gray-900">Fare</h3>
+              <h3 className="text-sm font-semibold text-slate-900">Fare</h3>
               <p className="mt-1 text-2xl font-bold text-green-600">
                 ₹{props.fare[props.vehicleType]}
               </p>
@@ -74,7 +69,6 @@ const ConfirmRide = (props) => {
           </div>
         </div>
 
-        {/* Confirm Button */}
         <button
           onClick={() => {
             props.setVehicleFound(true);
@@ -82,7 +76,7 @@ const ConfirmRide = (props) => {
             props.createRide();
           }}
           disabled={props.isCreatingRide}
-          className="w-full p-4 mt-6 font-semibold text-white transition-all bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500"
+          className="btn-user mt-6"
         >
           {props.isCreatingRide ? (
             <span className="flex items-center justify-center gap-2">

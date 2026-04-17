@@ -55,25 +55,26 @@ const UserLogout = () => {
   }, [navigate, setUser]);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-purple-500 to-blue-600">
-      <div className="text-center">
+    <div className="screen-base screen-user flex items-center justify-center">
+      <div className="aurora-backdrop" />
+      <div className="panel-card relative z-10 w-[min(92vw,420px)] p-8 text-center">
         {isLoggingOut ? (
           <>
-            <i className="text-6xl text-white ri-loader-4-line animate-spin"></i>
-            <p className="mt-4 text-xl font-semibold text-white">
+            <i className="ri-loader-4-line animate-spin text-6xl text-violet-600"></i>
+            <p className="mt-4 text-xl font-semibold text-slate-900">
               Logging out...
             </p>
-            <p className="mt-2 text-sm text-white opacity-75">
+            <p className="mt-2 text-sm text-slate-600">
               We hope to see you again soon!
             </p>
           </>
         ) : (
           <>
-            <i className="text-6xl text-white ri-checkbox-circle-line"></i>
-            <p className="mt-4 text-xl font-semibold text-white">
+            <i className="ri-checkbox-circle-line text-6xl text-emerald-600"></i>
+            <p className="mt-4 text-xl font-semibold text-slate-900">
               Logged out successfully!
             </p>
-            <p className="mt-2 text-sm text-white opacity-75">Redirecting...</p>
+            <p className="mt-2 text-sm text-slate-600">Redirecting...</p>
           </>
         )}
       </div>

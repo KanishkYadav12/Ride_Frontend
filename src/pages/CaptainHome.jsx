@@ -238,25 +238,25 @@ const CaptainHome = () => {
   }, [confirmRidePopupPanel]);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-green-50 to-emerald-50">
-      {/* Header */}
-      <div className="fixed top-0 z-20 flex items-center justify-between w-screen p-6">
+    <div className="screen-base screen-captain">
+      <div className="aurora-backdrop" />
+
+      <div className="top-nav fixed inset-x-0 top-0 z-20 px-5 pt-5">
         <img
-          className="w-16 drop-shadow-lg"
+          className="w-16 drop-shadow-sm"
           src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
           alt="Uber"
         />
         <Link
           to="/captain/logout"
-          className="flex items-center justify-center w-10 h-10 transition-all bg-white rounded-full shadow-lg hover:bg-red-50"
+          className="icon-btn border-red-100 bg-red-500 text-white hover:bg-red-600"
         >
-          <i className="text-lg font-medium text-red-500 ri-logout-box-r-line"></i>
+          <i className="ri-logout-box-r-line text-lg font-medium"></i>
         </Link>
       </div>
 
-      {/* Error Message */}
       {error && (
-        <div className="fixed z-30 flex items-center gap-2 p-3 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg shadow-lg top-20 left-4 right-4">
+        <div className="alert-error fixed left-4 right-4 top-20 z-30">
           <i className="ri-error-warning-line"></i>
           <span>{error}</span>
           <button
@@ -268,10 +268,9 @@ const CaptainHome = () => {
         </div>
       )}
 
-      {/* Incoming Ride Toast */}
       {incomingRideToast && (
-        <div className="fixed top-20 left-4 right-4 z-[60] rounded-2xl border border-purple-200 bg-white shadow-2xl overflow-hidden">
-          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <div className="fixed left-4 right-4 top-20 z-[60] overflow-hidden rounded-2xl border border-violet-200 bg-white shadow-2xl">
+          <div className="flex items-start gap-3 bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
               <i className="text-xl ri-taxi-line"></i>
             </div>
@@ -293,25 +292,23 @@ const CaptainHome = () => {
               <i className="ri-close-line text-lg"></i>
             </button>
           </div>
-          <div className="px-4 py-3 text-sm text-gray-700 bg-white">
+          <div className="bg-white px-4 py-3 text-sm text-slate-700">
             Opened automatically. Review and accept the ride below.
           </div>
         </div>
       )}
 
-      {/* Map Section */}
-      <div className="h-3/5 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400">
+      <div className="h-3/5 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500">
         <div className="flex items-center justify-center h-full">
           <div className="text-center text-white">
             <i className="text-6xl ri-roadster-line"></i>
             <p className="mt-4 text-xl font-semibold">Waiting for Rides</p>
-            <p className="text-sm opacity-75">Your location is being tracked</p>
+            <p className="text-sm opacity-80">Your location is being tracked</p>
           </div>
         </div>
       </div>
 
-      {/* Captain Details Section */}
-      <div className="p-6 -mt-6 bg-white shadow-2xl h-2/5 rounded-t-3xl">
+      <div className="sheet-panel h-2/5 -mt-6 p-5 pt-6 sm:px-6">
         <CaptainDetails
           captain={captain}
           dashboardStats={dashboardStats}
@@ -322,7 +319,6 @@ const CaptainHome = () => {
         />
       </div>
 
-      {/* Ride Popup Overlay */}
       {ridePopupPanel && (
         <button
           type="button"
@@ -332,10 +328,9 @@ const CaptainHome = () => {
         />
       )}
 
-      {/* Ride Popup Panel */}
       <div
         ref={ridePopupPanelRef}
-        className="fixed bottom-0 z-[50] w-full px-3 py-10 pt-12 translate-y-full bg-white shadow-2xl rounded-t-3xl"
+        className="sheet-panel fixed bottom-0 z-[50] w-full translate-y-full px-3 py-8 pt-11"
       >
         <RidePopUp
           ride={ride}
@@ -346,10 +341,9 @@ const CaptainHome = () => {
         />
       </div>
 
-      {/* Confirm Ride Popup Panel */}
       <div
         ref={confirmRidePopupPanelRef}
-        className="fixed bottom-0 z-[55] w-full h-screen px-3 py-10 pt-12 translate-y-full bg-white"
+        className="sheet-panel fixed bottom-0 z-[55] h-screen w-full translate-y-full px-3 py-8 pt-11"
       >
         <ConfirmRidePopUp
           ride={ride}

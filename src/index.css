@@ -1,3 +1,134 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+@layer base {
+  :root {
+    --ink-900: #0f172a;
+    --ink-700: #334155;
+    --ink-500: #64748b;
+    --surface-100: #f8fafc;
+    --surface-200: #f1f5f9;
+    --brand-500: #7c3aed;
+    --brand-600: #6d28d9;
+    --brand-700: #5b21b6;
+    --accent-500: #10b981;
+    --accent-600: #059669;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink-900);
+    background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 45%, #eff6ff 100%);
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .screen-base {
+    @apply relative min-h-screen overflow-hidden;
+  }
+
+  .screen-user {
+    @apply bg-gradient-to-br from-indigo-50 via-violet-50 to-sky-50;
+  }
+
+  .screen-captain {
+    @apply bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50;
+  }
+
+  .aurora-backdrop {
+    @apply pointer-events-none absolute inset-0;
+    background:
+      radial-gradient(
+        circle at 10% 10%,
+        rgba(124, 58, 237, 0.2) 0%,
+        transparent 30%
+      ),
+      radial-gradient(
+        circle at 85% 0%,
+        rgba(14, 165, 233, 0.22) 0%,
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 50% 100%,
+        rgba(16, 185, 129, 0.15) 0%,
+        transparent 30%
+      );
+  }
+
+  .top-nav {
+    @apply relative z-20 flex items-center justify-between px-5 pt-5;
+  }
+
+  .icon-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/90 text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .panel-card {
+    @apply rounded-3xl border border-white/60 bg-white/95 shadow-xl backdrop-blur;
+  }
+
+  .sheet-panel {
+    @apply rounded-t-[2rem] border border-slate-100 bg-white/95 shadow-2xl backdrop-blur;
+  }
+
+  .title-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-600;
+  }
+
+  .field-label {
+    @apply mb-2 block text-sm font-semibold text-slate-700;
+  }
+
+  .input-main {
+    @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[15px] text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-100;
+  }
+
+  .btn-primary {
+    @apply inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white shadow-lg transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400;
+  }
+
+  .btn-user {
+    @apply inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-violet-700 hover:to-indigo-700 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-500;
+  }
+
+  .btn-captain {
+    @apply inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-emerald-700 hover:to-teal-700 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-500;
+  }
+
+  .btn-soft {
+    @apply inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-200;
+  }
+
+  .alert-error {
+    @apply mt-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700;
+  }
+
+  .surface-block {
+    @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm;
+  }
+}

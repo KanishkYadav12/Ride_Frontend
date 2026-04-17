@@ -40,7 +40,6 @@ const FinishRide = (props) => {
 
   return (
     <div className="relative">
-      {/* Close Button */}
       <button
         className="absolute top-0 left-0 right-0 flex justify-center p-2"
         onClick={() => props.setFinishRidePanel(false)}
@@ -49,74 +48,70 @@ const FinishRide = (props) => {
       </button>
 
       <div className="mt-8">
-        <h3 className="mb-6 text-2xl font-bold text-gray-900">Complete Ride</h3>
+        <p className="title-kicker text-emerald-700">Completion</p>
+        <h3 className="mb-6 mt-1 text-2xl font-bold text-slate-900">
+          Complete Ride
+        </h3>
 
-        {/* Error Message */}
         {error && (
-          <div className="flex items-center gap-2 p-3 mb-4 text-sm text-red-700 bg-red-100 border border-red-200 rounded-lg">
+          <div className="alert-error mb-4">
             <i className="ri-error-warning-line"></i>
             <span>{error}</span>
           </div>
         )}
 
-        {/* Success Message */}
         {isEnding && (
-          <div className="flex items-center gap-2 p-3 mb-4 text-sm text-green-700 bg-green-100 border border-green-200 rounded-lg">
+          <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
             <i className="ri-checkbox-circle-line"></i>
             <span>Ride completed successfully!</span>
           </div>
         )}
 
-        {/* Passenger Info */}
-        <div className="flex items-center gap-4 p-4 mb-6 border border-gray-200 rounded-xl bg-gray-50">
+        <div className="surface-block mb-6 flex items-center gap-4 bg-slate-50">
           <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-purple-600 rounded-full">
             <i className="text-xl text-white ri-user-fill"></i>
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 capitalize">
+            <h2 className="text-lg font-semibold capitalize text-slate-900">
               {props.ride?.user?.fullname?.firstname || "Passenger"}{" "}
               {props.ride?.user?.fullname?.lastname || ""}
             </h2>
-            <p className="mt-1 text-xs text-gray-500">Ride completed</p>
+            <p className="mt-1 text-xs text-slate-500">Ride completed</p>
           </div>
         </div>
 
-        {/* Ride Summary */}
         <div className="mb-6 space-y-3">
-          {/* Pickup */}
-          <div className="flex items-start gap-4 p-3 border-l-4 border-green-500 rounded-lg bg-green-50">
+          <div className="flex items-start gap-4 rounded-xl border-l-4 border-green-500 bg-green-50 p-3">
             <i className="flex-shrink-0 text-xl text-green-600 ri-map-pin-user-fill"></i>
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs font-semibold text-gray-600 uppercase">
+              <h3 className="text-xs font-semibold uppercase text-slate-600">
                 Pickup
               </h3>
-              <p className="mt-1 text-sm text-gray-700 break-words">
+              <p className="mt-1 break-words text-sm text-slate-700">
                 {props.ride?.pickup || "Loading..."}
               </p>
             </div>
           </div>
 
-          {/* Destination */}
-          <div className="flex items-start gap-4 p-3 border-l-4 border-red-500 rounded-lg bg-red-50">
+          <div className="flex items-start gap-4 rounded-xl border-l-4 border-red-500 bg-red-50 p-3">
             <i className="flex-shrink-0 text-xl text-red-600 ri-map-pin-2-fill"></i>
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs font-semibold text-gray-600 uppercase">
+              <h3 className="text-xs font-semibold uppercase text-slate-600">
                 Destination
               </h3>
-              <p className="mt-1 text-sm text-gray-700 break-words">
+              <p className="mt-1 break-words text-sm text-slate-700">
                 {props.ride?.destination || "Loading..."}
               </p>
             </div>
           </div>
 
-          {/* Fare */}
           {props.ride?.fare && (
-            <div className="flex items-center justify-between p-4 border border-green-200 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50">
+            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-cyan-50 p-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-700">
+                <h3 className="text-sm font-semibold text-slate-700">
                   Total Fare
                 </h3>
-                <p className="mt-1 text-xs text-gray-600">Amount to collect</p>
+                <p className="mt-1 text-xs text-slate-600">Amount to collect</p>
               </div>
               <p className="text-3xl font-bold text-green-600">
                 ₹{props.ride.fare}
@@ -125,13 +120,8 @@ const FinishRide = (props) => {
           )}
         </div>
 
-        {/* Action Button */}
         <div className="mt-8">
-          <button
-            onClick={endRide}
-            disabled={isEnding}
-            className="w-full p-4 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed active:scale-95"
-          >
+          <button onClick={endRide} disabled={isEnding} className="btn-captain">
             {isEnding ? (
               <span className="flex items-center justify-center gap-2">
                 <i className="ri-loader-4-line animate-spin"></i>

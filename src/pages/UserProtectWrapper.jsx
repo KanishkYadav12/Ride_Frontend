@@ -40,10 +40,14 @@ const UserProtectWrapper = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-purple-500 to-blue-600">
-        <div className="text-center">
-          <i className="text-6xl text-white ri-loader-4-line animate-spin"></i>
-          <p className="mt-4 text-lg font-medium text-white">Loading...</p>
+      <div className="screen-base screen-user flex items-center justify-center">
+        <div className="aurora-backdrop" />
+        <div className="panel-card relative z-10 w-[min(92vw,420px)] p-8 text-center">
+          <i className="ri-loader-4-line animate-spin text-6xl text-violet-600"></i>
+          <p className="mt-4 text-lg font-medium text-slate-900">Loading...</p>
+          <p className="mt-2 text-sm text-slate-600">
+            Securing your trip dashboard.
+          </p>
         </div>
       </div>
     );
