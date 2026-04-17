@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
+import { API_BASE_URL } from "../config/api";
 
 const UserSignup = () => {
   const [email, setEmail] = useState("");
@@ -30,8 +31,8 @@ const UserSignup = () => {
       };
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/register`,
-        newUser
+        `${API_BASE_URL}/users/register`,
+        newUser,
       );
 
       if (response.status === 201) {
@@ -42,7 +43,7 @@ const UserSignup = () => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Registration failed. Please try again."
+        err.response?.data?.message || "Registration failed. Please try again.",
       );
     } finally {
       setIsLoading(false);

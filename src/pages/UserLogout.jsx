@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
+import { API_BASE_URL } from "../config/api";
 
 const UserLogout = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const UserLogout = () => {
       }
 
       try {
-        await axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, {
+        await axios.get(`${API_BASE_URL}/users/logout`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

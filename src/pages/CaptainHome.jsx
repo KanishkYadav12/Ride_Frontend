@@ -8,13 +8,19 @@ import RidePopUp from "../components/RidePopUp";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
 import { SocketContext } from "../context/SocketContext";
 import { CaptainDataContext } from "../context/CaptainContext";
+import { API_BASE_URL } from "../config/api";
 
 const CaptainHome = () => {
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [activeStatsTab, setActiveStatsTab] = useState("today");
+  const [isStatsLoading, setIsStatsLoading] = useState(false);
+  const [statsError, setStatsError] = useState("");
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
   const [ride, setRide] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState("");
+  const [incomingRideToast, setIncomingRideToast] = useState(null);
 
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
@@ -22,16 +28,47 @@ const CaptainHome = () => {
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(CaptainDataContext);
 
+  useEffect(() => {
+    if (!captain?._id) return;
+
+    const fetchDashboardStats = async () => {
+      try {
+        setIsStatsLoading(true);
+        setStatsError("");
+
+        const response = await axios.get(
+          `${API_BASE_URL}/captains/dashboard-stats`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          },
+        );
+
+        setDashboardStats(response.data);
+      } catch (err) {
+        console.error("Dashboard stats error:", err);
+        setStatsError("Unable to load dashboard stats");
+      } finally {
+        setIsStatsLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, [captain?._id]);
+
   // ✅ FIX: Proper socket connection and location updates with cleanup
   useEffect(() => {
     if (!socket || !captain?._id) return;
 
-    // Join socket room
-    socket.emit("join", {
-      userId: captain._id,
-      userType: "captain",
-    });
-    console.log("✅ Captain joined socket room:", captain._id);
+    const joinSocketRoom = () => {
+      // Join socket room every time the socket reconnects so the backend always has the latest socketId.
+      socket.emit("join", {
+        userId: captain._id,
+        userType: "captain",
+      });
+      console.log("✅ Captain joined socket room:", captain._id, socket.id);
+    };
 
     // Location update function
     // Location update function
@@ -61,6 +98,12 @@ const CaptainHome = () => {
       console.log("🚗 New ride request:", data);
       setRide(data);
       setRidePopupPanel(true);
+      setConfirmRidePopupPanel(false);
+      setIncomingRideToast({
+        title: "New ride request",
+        pickup: data?.pickup,
+        destination: data?.destination,
+      });
     };
 
     const handleError = (error) => {
@@ -68,16 +111,30 @@ const CaptainHome = () => {
       setError(error.message || "Something went wrong");
     };
 
+    joinSocketRoom();
+
     socket.on("new-ride", handleNewRide);
     socket.on("error", handleError);
+    socket.on("connect", joinSocketRoom);
 
     // ✅ Cleanup function
     return () => {
       clearInterval(locationInterval);
       socket.off("new-ride", handleNewRide);
       socket.off("error", handleError);
+      socket.off("connect", joinSocketRoom);
     };
   }, [socket, captain]);
+
+  useEffect(() => {
+    if (!incomingRideToast) return;
+
+    const timer = setTimeout(() => {
+      setIncomingRideToast(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [incomingRideToast]);
 
   // Confirm ride function
   const confirmRide = async () => {
@@ -91,7 +148,7 @@ const CaptainHome = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/rides/confirm`,
+        `${API_BASE_URL}/rides/confirm`,
         {
           rideId: ride._id,
         },
@@ -99,7 +156,7 @@ const CaptainHome = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       console.log("✅ Ride confirmed:", response.data);
@@ -177,6 +234,37 @@ const CaptainHome = () => {
         </div>
       )}
 
+      {/* Incoming Ride Toast */}
+      {incomingRideToast && (
+        <div className="fixed top-20 left-4 right-4 z-[60] rounded-2xl border border-purple-200 bg-white shadow-2xl overflow-hidden">
+          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+              <i className="text-xl ri-taxi-line"></i>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">{incomingRideToast.title}</p>
+              <p className="mt-1 text-xs text-white/90 truncate">
+                {incomingRideToast.pickup || "Pickup pending"}
+              </p>
+              <p className="text-xs text-white/90 truncate">
+                {incomingRideToast.destination || "Destination pending"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIncomingRideToast(null)}
+              className="rounded-full p-1 text-white/90 hover:bg-white/15 hover:text-white"
+              aria-label="Dismiss ride toast"
+            >
+              <i className="ri-close-line text-lg"></i>
+            </button>
+          </div>
+          <div className="px-4 py-3 text-sm text-gray-700 bg-white">
+            Opened automatically. Review and accept the ride below.
+          </div>
+        </div>
+      )}
+
       {/* Map Section */}
       <div className="h-3/5 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400">
         <div className="flex items-center justify-center h-full">
@@ -190,13 +278,30 @@ const CaptainHome = () => {
 
       {/* Captain Details Section */}
       <div className="p-6 -mt-6 bg-white shadow-2xl h-2/5 rounded-t-3xl">
-        <CaptainDetails captain={captain} />
+        <CaptainDetails
+          captain={captain}
+          dashboardStats={dashboardStats}
+          activeStatsTab={activeStatsTab}
+          setActiveStatsTab={setActiveStatsTab}
+          isStatsLoading={isStatsLoading}
+          statsError={statsError}
+        />
       </div>
+
+      {/* Ride Popup Overlay */}
+      {ridePopupPanel && (
+        <button
+          type="button"
+          onClick={() => setRidePopupPanel(false)}
+          className="fixed inset-0 z-[45] bg-black/30 backdrop-blur-[2px]"
+          aria-label="Close ride popup overlay"
+        />
+      )}
 
       {/* Ride Popup Panel */}
       <div
         ref={ridePopupPanelRef}
-        className="fixed bottom-0 z-10 w-full px-3 py-10 pt-12 translate-y-full bg-white shadow-2xl rounded-t-3xl"
+        className="fixed bottom-0 z-[50] w-full px-3 py-10 pt-12 translate-y-full bg-white shadow-2xl rounded-t-3xl"
       >
         <RidePopUp
           ride={ride}
@@ -210,7 +315,7 @@ const CaptainHome = () => {
       {/* Confirm Ride Popup Panel */}
       <div
         ref={confirmRidePopupPanelRef}
-        className="fixed bottom-0 z-10 w-full h-screen px-3 py-10 pt-12 translate-y-full bg-white"
+        className="fixed bottom-0 z-[55] w-full h-screen px-3 py-10 pt-12 translate-y-full bg-white"
       >
         <ConfirmRidePopUp
           ride={ride}

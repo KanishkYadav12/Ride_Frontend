@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const FinishRide = (props) => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const FinishRide = (props) => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
+        `${API_BASE_URL}/rides/end-ride`,
         {
           rideId: props.ride._id,
         },
@@ -21,7 +22,7 @@ const FinishRide = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -31,7 +32,7 @@ const FinishRide = (props) => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Failed to end ride. Please try again."
+        err.response?.data?.message || "Failed to end ride. Please try again.",
       );
       setIsEnding(false);
     }

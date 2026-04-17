@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const ConfirmRidePopUp = (props) => {
   const [otp, setOtp] = useState("");
@@ -20,18 +21,15 @@ const ConfirmRidePopUp = (props) => {
     setIsStarting(true);
 
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/rides/start-ride`,
-        {
-          params: {
-            rideId: props.ride._id,
-            otp: otp,
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/rides/start-ride`, {
+        params: {
+          rideId: props.ride._id,
+          otp: otp,
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       if (response.status === 200) {
         props.setConfirmRidePopupPanel(false);

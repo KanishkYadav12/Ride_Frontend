@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const CaptainProtectWrapper = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -17,14 +18,11 @@ const CaptainProtectWrapper = ({ children }) => {
 
     const verifyToken = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/captains/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_BASE_URL}/captains/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.status === 200) {
           setCaptain(response.data.captain);

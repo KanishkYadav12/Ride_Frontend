@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserDataContext } from "../context/UserContext";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const UserLogin = () => {
   const [email, setEmail] = useState("");
@@ -18,10 +19,10 @@ const UserLogin = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/login`,
-        { email, password }
-      );
+      const response = await axios.post(`${API_BASE_URL}/users/login`, {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         const { user, token } = response.data;
@@ -31,7 +32,7 @@ const UserLogin = () => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Login failed. Please try again."
+        err.response?.data?.message || "Login failed. Please try again.",
       );
     } finally {
       setIsLoading(false);

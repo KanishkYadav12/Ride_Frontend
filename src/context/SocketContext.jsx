@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useContext, useState } from "react";
 import { io } from "socket.io-client";
+import { API_BASE_URL } from "../config/api";
 
 export const SocketContext = createContext();
 
@@ -7,9 +8,7 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
-
-    const s = io(baseURL, {
+    const s = io(API_BASE_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5,

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CaptainDataContext } from "../context/CaptainContext";
+import { API_BASE_URL } from "../config/api";
 
 const CaptainLogout = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const CaptainLogout = () => {
       }
 
       try {
-        await axios.get(`${import.meta.env.VITE_BASE_URL}/captains/logout`, {
+        await axios.get(`${API_BASE_URL}/captains/logout`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
